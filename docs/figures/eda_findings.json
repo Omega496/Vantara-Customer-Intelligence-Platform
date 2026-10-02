@@ -1,0 +1,16 @@
+{
+  "total_active_customers": 5862,
+  "median_recency_days": 95.0,
+  "mean_recency_days": 200.05834186284545,
+  "median_frequency_orders": 3.0,
+  "mean_frequency_orders": 6.250426475605595,
+  "median_spend": 854.14,
+  "mean_spend": 2864.460165472535,
+  "uk_revenue_share": 0.8347611349555886,
+  "hypotheses": [
+    "H1: Recency is the primary predictor of customer churn; customers inactive for >90 days exhibit near-zero return likelihood.",
+    "H2: One-time purchasers (frequency=1) account for ~30-40% of the customer base and require distinct retention treatment.",
+    "H3: Return rate correlates positively with churn, acting as an early dissatisfaction signal.",
+    "H4: Customer spend follows a heavy right-skewed Pareto distribution (top 20% generate ~80% of revenue), justifying CLV prioritization."
+  ]
+}

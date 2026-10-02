@@ -1,0 +1,80 @@
+{
+  "evaluation_metrics": {
+    "kmeans_silhouette": 0.1217,
+    "kmeans_davies_bouldin": 2.1811,
+    "gmm_silhouette": 0.1056,
+    "gmm_bic": 3388.54,
+    "k_selection_curve": {
+      "k": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "inertia": [
+        916.1,
+        826.14,
+        753.29,
+        704.15,
+        653.73,
+        615.11
+      ],
+      "silhouette": [
+        0.1207,
+        0.1217,
+        0.1286,
+        0.127,
+        0.1303,
+        0.1314
+      ],
+      "davies_bouldin": [
+        2.5586,
+        2.1811,
+        1.9448,
+        1.8151,
+        1.7731,
+        1.6911
+      ]
+    }
+  },
+  "segments": {
+    "At-Risk / Lapsed": {
+      "cluster_id": 0,
+      "customer_count": 65,
+      "share_of_cohort": 0.4333,
+      "mean_recency_days": 108.5,
+      "mean_frequency_orders": 6.88,
+      "mean_total_spend": 1857.29,
+      "mean_engagement_score": 60.58,
+      "churn_rate": 0.4,
+      "forward_clv_90d": 505.57,
+      "recommended_strategy": "Low frequency, low spend buyers with high churn risk. Recommend automated promotional email drips and price-incentive promos."
+    },
+    "At-Risk / Lapsed (Cohort 1)": {
+      "cluster_id": 1,
+      "customer_count": 53,
+      "share_of_cohort": 0.3533,
+      "mean_recency_days": 140.97,
+      "mean_frequency_orders": 7.08,
+      "mean_total_spend": 3196.29,
+      "mean_engagement_score": 45.51,
+      "churn_rate": 0.49,
+      "forward_clv_90d": 491.76,
+      "recommended_strategy": "Targeted engagement campaigns."
+    },
+    "At-Risk / Lapsed (Cohort 2)": {
+      "cluster_id": 2,
+      "customer_count": 32,
+      "share_of_cohort": 0.2133,
+      "mean_recency_days": 223.48,
+      "mean_frequency_orders": 5.41,
+      "mean_total_spend": 2230.18,
+      "mean_engagement_score": 62.29,
+      "churn_rate": 0.56,
+      "forward_clv_90d": 534.03,
+      "recommended_strategy": "Targeted engagement campaigns."
+    }
+  }
+}

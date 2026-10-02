@@ -1,0 +1,38 @@
+[
+  {
+    "Model":"LightGBM Regressor",
+    "Test_MAE":166.28,
+    "Test_RMSE":246.85,
+    "Test_R2":0.4413,
+    "Val_MAE":109.0,
+    "Val_RMSE":161.04,
+    "Val_R2":0.8303
+  },
+  {
+    "Model":"LightGBM (Log-Target)",
+    "Test_MAE":147.8,
+    "Test_RMSE":254.58,
+    "Test_R2":0.4057,
+    "Val_MAE":205.0,
+    "Val_RMSE":345.76,
+    "Val_R2":0.2175
+  },
+  {
+    "Model":"Random Forest Regressor",
+    "Test_MAE":167.83,
+    "Test_RMSE":267.3,
+    "Test_R2":0.3449,
+    "Val_MAE":126.62,
+    "Val_RMSE":215.91,
+    "Val_R2":0.6949
+  },
+  {
+    "Model":"Ridge Regressor",
+    "Test_MAE":214.46,
+    "Test_RMSE":283.69,
+    "Test_R2":0.2621,
+    "Val_MAE":196.64,
+    "Val_RMSE":268.34,
+    "Val_R2":0.5287
+  }
+]

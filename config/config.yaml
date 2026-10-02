@@ -1,0 +1,167 @@
+# Vantara Customer Intelligence Platform Configuration
+
+project:
+  name: "Vantara Customer Intelligence Platform"
+  version: "1.0.0"
+  random_seed: 42
+
+paths:
+  raw_data_dir: "data/raw"
+  interim_data_dir: "data/interim"
+  processed_data_dir: "data/processed"
+  models_dir: "models_artifacts"
+  reports_dir: "docs"
+  raw_excel_filename: "online_retail_II.xlsx"
+  cleaned_transactions_file: "data/interim/cleaned_transactions.parquet"
+  customer_features_file: "data/processed/customer_features.parquet"
+  customer_features_csv: "data/processed/customer_features.csv"
+
+data_pipeline:
+  uci_dataset_id: 502
+  sheets:
+    - "Year 2009-2010"
+    - "Year 2010-2011"
+  column_rename_map:
+    Invoice: "invoice"
+    StockCode: "stock_code"
+    Description: "description"
+    Quantity: "quantity"
+    InvoiceDate: "invoice_date"
+    Price: "price"
+    "Customer ID": "customer_id"
+    Country: "country"
+  administrative_stock_codes:
+    - "POST"
+    - "D"
+    - "M"
+    - "PADS"
+    - "DOT"
+    - "CRUK"
+    - "BANK CHARGES"
+    - "TEST"
+    - "AMAZONFEE"
+  validation:
+    max_null_rate_customer_id_cleaned: 0.0
+    min_unit_price: 0.001
+    max_iqr_multiplier_quantity: 5.0
+    max_iqr_multiplier_price: 5.0
+
+features:
+  cutoff_days_for_churn: 90
+  reference_date: null  # null means max(invoice_date) in observation window
+  rfm:
+    recency_col: "recency_days"
+    frequency_col: "frequency"
+    monetary_col: "total_spend"
+  engagement_score:
+    recency_weight: 0.35
+    frequency_weight: 0.35
+    monetary_weight: 0.30
+  top_categories_count: 10
+  top_countries_count: 5
+
+modeling:
+  cv_folds: 5
+  test_size: 0.15
+  val_size: 0.15
+  target_col: "churn"
+  clv_target_col: "clv_next_90d"
+  
+  logistic_regression:
+    C: 1.0
+    max_iter: 1000
+    penalty: "l2"
+    solver: "lbfgs"
+
+  decision_tree:
+    max_depth: 6
+    min_samples_split: 20
+    min_samples_leaf: 10
+
+  random_forest:
+    n_estimators: 200
+    max_depth: 8
+    min_samples_split: 10
+    min_samples_leaf: 5
+    n_jobs: -1
+
+  xgboost:
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 5
+    subsample: 0.8
+    colsample_bytree: 0.8
+    eval_metric: "auc"
+    early_stopping_rounds: 30
+
+  lightgbm:
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 5
+    num_leaves: 31
+    subsample: 0.8
+    colsample_bytree: 0.8
+    eval_metric: "auc"
+    early_stopping_rounds: 30
+
+  knn:
+    n_neighbors: 11
+    weights: "distance"
+    metric: "minkowski"
+
+  svm:
+    C: 1.0
+    kernel: "rbf"
+    probability: true
+
+  ann:
+    hidden_dims: [128, 64, 32]
+    dropout_rate: 0.3
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    batch_size: 64
+    epochs: 100
+    patience: 10
+
+  lstm:
+    seq_length: 5
+    feature_dim: 4  # amount, gap_days, item_count, is_return
+    hidden_dim: 64
+    num_layers: 2
+    dropout_rate: 0.2
+    learning_rate: 0.001
+    batch_size: 64
+    epochs: 80
+    patience: 10
+
+  autoencoder:
+    latent_dim: 6
+    hidden_dims: [32, 16]
+    learning_rate: 0.001
+    batch_size: 64
+    epochs: 70
+    patience: 8
+    anomaly_percentile_threshold: 95.0
+
+segmentation:
+  kmeans:
+    k_range: [2, 9]
+    default_k: 4
+  dbscan:
+    eps: 0.5
+    min_samples: 15
+  gmm:
+    n_components: 4
+    covariance_type: "full"
+
+database:
+  url: "postgresql://vantara_user:vantara_password@localhost:5432/vantara_db"
+  pool_size: 10
+  max_overflow: 20
+
+api:
+  title: "Vantara Customer Intelligence API"
+  version: "1.0.0"
+  description: "REST API for Customer Churn, CLV, Anomaly Detection & Segmentation"
+  host: "0.0.0.0"
+  port: 8000
