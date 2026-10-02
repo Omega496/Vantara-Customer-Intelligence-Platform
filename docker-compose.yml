@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: vantara_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: vantara_db
+      POSTGRES_USER: vantara_user
+      POSTGRES_PASSWORD: vantara_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vantara_user -d vantara_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vantara_net
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vantara_api
+    restart: unless-stopped
+    command: >
+      sh -c "python -m src.database.seed &&
+             uvicorn api.main:app --host 0.0.0.0 --port 8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://vantara_user:vantara_password@db:5432/vantara_db
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      API_HOST: "0.0.0.0"
+      API_PORT: "8000"
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - vantara_net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vantara_frontend
+    restart: unless-stopped
+    command: streamlit run frontend/dashboard.py --server.port 8501 --server.address 0.0.0.0
+    environment:
+      API_BASE_URL: http://api:8000
+      DATABASE_URL: postgresql+psycopg2://vantara_user:vantara_password@db:5432/vantara_db
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - vantara_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  vantara_net:
+    driver: bridge
