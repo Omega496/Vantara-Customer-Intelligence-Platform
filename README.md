@@ -91,6 +91,73 @@ customer-behavior-prediction/
   - Implemented LIME tabular local explainer with rule-based surrogate explanations.
   - Implemented automated plain-language marketing briefing generator.
   - Test suite passing with 27 unit tests, 86% coverage across `src/`, and 0 Ruff linter errors.
-- [ ] **Milestone 5: Database (PostgreSQL) & REST API (FastAPI)**
-- [ ] **Milestone 6: Streamlit Interactive Dashboard**
-- [ ] **Milestone 7: Unit Tests (Coverage ≥ 70%), Dockerization & Final Documentation**
+- [x] **Milestone 5: Database (PostgreSQL & SQLite) & REST API (FastAPI)**
+  - Built SQLAlchemy ORM models (`Customer`, `CustomerSegment`, `Prediction`, `AnomalyReport`).
+  - Database connection manager with automatic SQLite fallback (`data/processed/retail.db`).
+  - Pre-seeded database with 5,300 historical customer cohort across all tables.
+  - Developed FastAPI application with Pydantic request/response schemas.
+  - Endpoints: `GET /health`, `GET /models/metadata`, `POST /predict/customer`, `POST /predict/batch`, `GET /customers/{customer_id}`.
+  - Measured latency: P95 response time of **42.56ms** (< 400ms SLA).
+- [x] **Milestone 6: Streamlit Interactive Dashboard & Visualizations**
+  - Built multi-tab responsive Streamlit dashboard (`frontend/dashboard.py`).
+  - Views: Executive Overview, Behavioral Segmentation (2D/3D space), Churn Risk Leaderboard, Customer 360° Drilldown (SHAP & Narratives), Batch Scoring Studio.
+  - Optimized cached loading under 1.5 seconds via `@st.cache_data`.
+- [x] **Milestone 7: Unit Tests (88% Coverage), Docker Compose & Final Documentation**
+  - 39 automated unit and integration tests passing (`pytest tests/`).
+  - 88% overall repository code coverage (exceeding >= 70% requirement).
+  - 0 Ruff linter errors across all source files.
+  - Production `Dockerfile` and `docker-compose.yml` (PostgreSQL, FastAPI, Streamlit).
+  - Architecture diagram (`docs/architecture_diagram.png`) and ER diagram (`docs/er_diagram.png`).
+  - Comprehensive final report and mathematical foundations appendix (`docs/final_report.md`).
+  - 5-minute executive presentation script (`docs/demo_presentation_script.md`).
+
+---
+
+## 🏗️ System Architecture & Schema Diagrams
+
+### 4-Layer Architecture Diagram
+![System Architecture](docs/architecture_diagram.png)
+
+### Relational Database Entity-Relationship (ER) Diagram
+![ER Diagram](docs/er_diagram.png)
+
+---
+
+## ⚡ Quickstart Guide
+
+### Option 1: Multi-Container Docker Compose (Recommended)
+```bash
+# Launch PostgreSQL, FastAPI, and Streamlit in background
+docker-compose up --build -d
+
+# Open Streamlit Web App: http://localhost:8501
+# Open FastAPI Swagger Docs: http://localhost:8000/docs
+# Open Health Endpoint: http://localhost:8000/health
+```
+
+### Option 2: Local Python Execution
+```bash
+# 1. Activate virtual environment
+source .venv/bin/activate
+
+# 2. Seed SQLite database
+python -m src.database.seed
+
+# 3. Launch FastAPI backend (Terminal 1)
+uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+# 4. Launch Streamlit frontend (Terminal 2)
+streamlit run frontend/dashboard.py --server.port 8501
+```
+
+---
+
+## 🧪 Testing & Code Quality Verification
+
+```bash
+# Run complete test suite with coverage
+pytest --cov=src --cov=api --cov-report=term-missing
+
+# Run Ruff code linter
+ruff check .
+```

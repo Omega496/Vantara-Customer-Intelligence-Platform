@@ -32,6 +32,9 @@ data/processed/*
 !data/processed/.gitkeep
 models_artifacts/*
 !models_artifacts/.gitkeep
+*.parquet
+*.db
+*.sqlite3
 
 # Environment & IDE
 .env

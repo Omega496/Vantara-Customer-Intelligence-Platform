@@ -57,7 +57,25 @@ Evaluated on an isolated 15% stratified test holdout ($N=795$):
 | **PyTorch Sequence LSTM**| 0.7528 | 0.8385 | 0.6720 | 0.7459 | Temporal Trajectory Check |
 | **Decision Tree (CART)** | 0.7944 | 0.7677 | 0.7918 | 0.7796 | Single Tree Baseline |
 
-### 2.2 Customer Lifetime Value (CLV) Regression Benchmark
+### 2.2 Deep Learning Suite & Training Loss Curves
+
+The platform incorporates three dedicated PyTorch neural network architectures:
+- **`ChurnANN`**: Feed-forward deep classifier with Batch Normalization and Dropout layers ($p=0.30$) preventing overfitting.
+- **`PurchaseLSTM`**: Time-series recurrent architecture processing 3D customer sequence tensors ($N \times 6 \times 4$) capturing order amounts, inter-purchase gap intervals, item quantities, and return indicators.
+- **`SpendingAutoencoder`**: Unsupervised symmetric compression architecture ($12 \to 32 \to 16 \to 6 \to 16 \to 32 \to 12$) quantifying normalized spending deviation.
+
+![ANN Training & Validation Loss Curve](figures/ann_loss_curve.png)
+*Figure 1: PyTorch Feed-Forward ChurnANN training and validation loss progression over 100 epochs with early stopping.*
+
+![Sequence LSTM Loss Curve](figures/lstm_loss_curve.png)
+*Figure 2: PyTorch 2-layer Sequence LSTM convergence on customer transaction intervals.*
+
+![Autoencoder Reconstruction Error Distribution](figures/autoencoder_reconstruction_error.png)
+*Figure 3: Unsupervised Deep Spending Autoencoder reconstruction error distribution with validated 95th ($0.0748$) and 99th ($0.1706$) percentile anomaly cutoff thresholds.*
+
+---
+
+### 2.3 Customer Lifetime Value (CLV) Regression Benchmark
 
 Target: Continuous 90-day forward monetary spend (£):
 
@@ -67,7 +85,9 @@ Target: Continuous 90-day forward monetary spend (£):
 | **Random Forest Regressor** | 0.6606 | £400.99 | £2,588.66 |
 | **LightGBM Regressor** | 0.6195 | £442.27 | £2,741.59 |
 
-### 2.3 Customer Segmentation Personas
+---
+
+### 2.4 Customer Segmentation Personas
 
 Clustering identified 4 distinct, operationally viable marketing personas:
 
@@ -75,6 +95,48 @@ Clustering identified 4 distinct, operationally viable marketing personas:
 2. **Loyal Regulars ($k=1$, 34.6%)**: Moderate recurring spend (£1,480 avg), steady engagement, low churn risk. Targeted for cross-category recommendations.
 3. **High-Value Inactive ($k=3$, 16.8%)**: High historical spend (£2,950 avg), but recency > 75 days. High priority for proactive reactivation incentives.
 4. **At-Risk / Lapsed ($k=0$, 28.3%)**: Single or low order count, recency > 120 days, high churn probability. Targeted with automated discount win-back campaigns.
+
+---
+
+### 2.5 Explainability & SHAP Interpretability
+
+Global and local model interpretability is powered by TreeSHAP on the production LightGBM classifier:
+
+![SHAP Global Summary Beeswarm Plot](figures/shap_summary_plot.png)
+*Figure 4: Global SHAP summary beeswarm plot ranking the top 20 predictive features by impact on log-odds churn probability.*
+
+![SHAP Feature Importance Bar Plot](figures/shap_bar_importance.png)
+*Figure 5: Mean absolute SHAP value ranking highlighting `recency_days`, `frequency`, and `total_spend` as primary portfolio drivers.*
+
+#### Local Customer Attribution Waterfalls
+Individual customer scoring explanations are generated with exact feature contribution waterfalls:
+
+![SHAP Local Waterfall - Low Risk Customer 14057](figures/shap_local_low_risk.png)
+*Figure 6: Low-Risk Champion (#14057) — high frequency and recent activity push churn score to 0.8%.*
+
+![SHAP Local Waterfall - Borderline Customer 12962](figures/shap_local_borderline.png)
+*Figure 7: Borderline Account (#12962) — elongating purchase intervals create moderate 45.8% churn risk.*
+
+![SHAP Local Waterfall - High Risk Customer 14376](figures/shap_local_high_risk.png)
+*Figure 8: High-Risk Account (#14376) — excessive recency decay (> 160 days) drives churn probability to 94.5%.*
+
+---
+
+### 2.6 Exploratory Data Analysis & Empirical Patterns
+
+Historical behavioral distributions extracted during initial pipeline exploration:
+
+![Monthly Revenue Trend](figures/eda_monthly_revenue_trend.png)
+*Figure 9: Historical monthly transaction revenue and order volume showing strong Q4 holiday spikes.*
+
+![Country Revenue Distribution](figures/eda_country_revenue.png)
+*Figure 10: International revenue concentration with the United Kingdom representing over 82% of transaction volume.*
+
+![RFM Distributions](figures/eda_rfm_distributions.png)
+*Figure 11: Skewed distributions of recency, frequency, and monetary spend motivating log-transformations.*
+
+![Return Rate Distribution](figures/eda_return_rate_distribution.png)
+*Figure 12: Customer-level transaction return rates showing high fidelity around 0–5% with distinct outliers.*
 
 ---
 
